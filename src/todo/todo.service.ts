@@ -7,11 +7,9 @@ import { Todo, CreateTodoDTO } from './todo.schema';
 @Injectable()
 export class TodoService {
 
-  constructor(
-    @Inject('TODO_MODEL') private readonly todoModel: Model<Todo>
-  ) { }
+  constructor(@Inject('TODO_MODEL') private readonly todoModel: Model<Todo>) { }
 
-  async create(createTodoDTO: CreateTodoDTO): Promise<Document<Todo>> {
+  async create (createTodoDTO: CreateTodoDTO): Promise<Document<Todo>> {
     try {
       const todo = new this.todoModel(createTodoDTO);
       const newTodo = await todo.save();
@@ -21,7 +19,7 @@ export class TodoService {
     }
   }
 
-  async find(query: object = {}): Promise<Document<Todo>[]> {
+  async find (query: object = {}): Promise<Document<Todo>[]> {
     try {
       const todos = await this.todoModel.find(query);
       return todos;
@@ -30,29 +28,41 @@ export class TodoService {
     }
   }
 
-  async findById(todoId: string): Promise<Document<Todo>> {
+  async findById (todoId: string): Promise<Document<Todo>> {
     try {
       if (!ObjectId.isValid(todoId)) { throw new UnprocessableEntityException(`${todoId} is not a valid id.`); }
 
       const todo = await this.todoModel.findById(todoId);
+      if (!todo) { throw new NotFoundException(`Not found`); }
+
       return todo;
     } catch (error) {
       throw new HttpException(error?.message || 'Error', error?.status || 500);
     }
   }
 
-  async update(todoId: string, updateObj: object): Promise<Document<Todo>> {
+  async update (todoId: string, updateObj: object): Promise<Document<Todo>> {
     try {
-
       if (!ObjectId.isValid(todoId)) { throw new UnprocessableEntityException(`${todoId} is not a valid id.`); }
 
       const updatedTodo = await this.todoModel
         .findByIdAndUpdate(todoId, { $set: { ...updateObj } }, { new: true, runValidators: true });
-
-      if (!updatedTodo) { throw new NotFoundException(`Not found.`); }
+      if (!updatedTodo) { throw new NotFoundException(`Not found`); }
 
       return updatedTodo;
+    } catch (error) {
+      throw new HttpException(error?.message || 'Error', error?.status || 500);
+    }
+  }
 
+  async remove (todoId: string): Promise<Document<Todo>> {
+    try {
+      if (!ObjectId.isValid(todoId)) { throw new UnprocessableEntityException(`${todoId} is not a valid id.`); }
+
+      const deletedTodo = await this.todoModel.findByIdAndDelete(todoId);
+      if (!deletedTodo) { throw new NotFoundException(`Not found`); }
+
+      return deletedTodo;
     } catch (error) {
       throw new HttpException(error?.message || 'Error', error?.status || 500);
     }
