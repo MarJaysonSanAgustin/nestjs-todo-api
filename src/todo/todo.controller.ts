@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { CreateTodoDTO, Todo } from './todo.schema';
-import { TodoService } from './todo.service';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
+import { plainToClass } from 'class-transformer';
+import { CreateTodoDTO, ModifyTodoDTO, Todo } from './todo.schema';
+import { TodoService } from './todo.service';
 
 @Controller('todos')
 export class TodoController {
@@ -17,6 +17,18 @@ export class TodoController {
       .json({
         status: HttpStatus.CREATED,
         items: plainToClass(Todo, createdTodo.toObject()),
+      })
+      .end();
+  }
+
+  @Patch(':id')
+  async update (@Param('id') todoId: string, @Body() updateTodoDTO: ModifyTodoDTO, @Res() res: Response) {
+    const updatedTodo = await this.todoService.update(todoId, updateTodoDTO);
+    return res
+      .status(HttpStatus.CREATED)
+      .json({
+        status: HttpStatus.CREATED,
+        items: plainToClass(Todo, updatedTodo.toObject()),
       })
       .end();
   }

@@ -2,7 +2,7 @@ import { Injectable, Inject, UnprocessableEntityException, NotFoundException, Ht
 import { Model, Document } from 'mongoose';
 import { ObjectId } from 'bson';
 
-import { Todo, CreateTodoDTO } from './todo.schema';
+import { Todo, CreateTodoDTO, ModifyTodoDTO } from './todo.schema';
 
 @Injectable()
 export class TodoService {

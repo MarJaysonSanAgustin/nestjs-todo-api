@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsBoolean } from 'class-validator';
 import { Expose, Transform } from 'class-transformer';
 
 export const TodoSchema = new Schema({
@@ -35,11 +35,28 @@ export class Todo {
 
 export class CreateTodoDTO {
   @IsNotEmpty()
+  @IsString()
   readonly title: string;
 
   @IsOptional()
+  @IsBoolean()
   readonly isDone: Boolean;
 
   @IsOptional()
+  @IsString()
+  readonly description?: string;
+}
+
+export class ModifyTodoDTO {
+  @IsOptional()
+  @IsString()
+  readonly title: string;
+
+  @IsOptional()
+  @IsBoolean()
+  readonly isDone: Boolean;
+
+  @IsOptional()
+  @IsString()
   readonly description?: string;
 }
