@@ -1,6 +1,10 @@
 import { Logger } from '@nestjs/common';
 
-import { createConnection, ConnectionOptions, Promise as MongoDBPromise } from 'mongoose';
+import {
+  createConnection,
+  ConnectionOptions,
+  Promise as MongoDBPromise,
+} from 'mongoose';
 
 const mongoDBLogger = new Logger('MongoDBProviders');
 
@@ -21,7 +25,10 @@ export const databaseProviders = [
     useFactory: async () => {
       MongoDBPromise.Promise = global.Promise;
 
-      const connection = await createConnection(process.env.MONGO_CLUSTER_CONNECTION, connectionOptions);
+      const connection = await createConnection(
+        process.env.MONGO_CLUSTER_CONNECTION,
+        connectionOptions,
+      );
 
       if (connection) {
         mongoDBLogger.log('MongoDB_Cluster0_Connection: Ready');

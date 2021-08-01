@@ -2,21 +2,24 @@ import { Schema } from 'mongoose';
 import { IsNotEmpty, IsOptional, IsString, IsBoolean } from 'class-validator';
 import { Expose, Transform } from 'class-transformer';
 
-export const TodoSchema = new Schema({
-  title: {
-    type: String,
-    required: true,
+export const TodoSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    isDone: {
+      type: Boolean,
+      default: false,
+    },
+    description: String,
   },
-  isDone: {
-    type: Boolean,
-    default: false,
-  },
-  description: String,
-}, { timestamps: true, versionKey: false });
+  { timestamps: true, versionKey: false },
+);
 
 export class Todo {
   title: string;
-  isDone: Boolean;
+  isDone: boolean;
   description?: string;
 
   @Expose({ name: '_id' })
@@ -28,7 +31,7 @@ export class Todo {
   @Transform(({ value }) => new Date(value).getTime())
   updatedAt: Date;
 
-  constructor (partial: Partial<Todo>) {
+  constructor(partial: Partial<Todo>) {
     Object.assign(this, partial);
   }
 }
@@ -40,7 +43,7 @@ export class CreateTodoDTO {
 
   @IsOptional()
   @IsBoolean()
-  readonly isDone: Boolean;
+  readonly isDone: boolean;
 
   @IsOptional()
   @IsString()
@@ -54,7 +57,7 @@ export class ModifyTodoDTO {
 
   @IsOptional()
   @IsBoolean()
-  readonly isDone: Boolean;
+  readonly isDone: boolean;
 
   @IsOptional()
   @IsString()
