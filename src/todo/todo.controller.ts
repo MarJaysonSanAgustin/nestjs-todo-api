@@ -20,7 +20,7 @@ export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Post()
-  async create(@Body() createTodoDTO: CreateTodoDTO) {
+  async create(@Body() createTodoDTO: CreateTodoDTO): Promise<Todo> {
     const createdTodo = await this.todoService.create(createTodoDTO);
     if (!createdTodo) throw new InternalServerErrorException();
 
@@ -31,7 +31,7 @@ export class TodoController {
   async update(
     @Param('id') todoId: string,
     @Body() updateTodoDTO: ModifyTodoDTO,
-  ) {
+  ): Promise<Todo> {
     if (!todoId || !ObjectId.isValid(todoId))
       throw new UnprocessableEntityException(`${todoId} is not a valid id.`);
 
@@ -42,7 +42,7 @@ export class TodoController {
   }
 
   @Get()
-  async find() {
+  async find(): Promise<Todo[]> {
     const todos = await this.todoService.find({});
     const serializedTodos = plainToClass(
       Todo,
@@ -53,19 +53,21 @@ export class TodoController {
   }
 
   @Get(':id')
-  async get(@Param('id') todoId: string) {
+  async get(
+    @Param('id') todoId: string,
+  ): Promise<Todo | UnprocessableEntityException | NotFoundException> {
     if (!todoId || !ObjectId.isValid(todoId))
       throw new UnprocessableEntityException(`${todoId} is not a valid id.`);
 
     const todo = await this.todoService.findById(todoId);
-    if (!todo) throw new NotFoundException('Todo not found');
+    if (!todo) throw new NotFoundException();
 
     const serializedTodo = plainToClass(Todo, todo?.toObject());
     return serializedTodo;
   }
 
   @Delete(':id')
-  async remove(@Param('id') todoId: string) {
+  async remove(@Param('id') todoId: string): Promise<Todo> {
     if (!todoId || !ObjectId.isValid(todoId))
       throw new UnprocessableEntityException(`${todoId} is not a valid id.`);
 
