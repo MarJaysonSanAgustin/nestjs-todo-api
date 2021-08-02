@@ -21,6 +21,8 @@ export class TodoController {
 
   @Post()
   async create(@Body() createTodoDTO: CreateTodoDTO): Promise<Todo> {
+    if (!createTodoDTO) throw new UnprocessableEntityException(`Invalid todo.`);
+
     const createdTodo = await this.todoService.create(createTodoDTO);
     if (!createdTodo) throw new InternalServerErrorException();
 
